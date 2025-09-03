@@ -8,16 +8,13 @@ const ai = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API!);
 
 let firstMssg: boolean = true;
 
-const greet = `At the very beginning of the conversation, say exactly this once:
-"Hello! I'm the AI representative for Chandraprakash Pandey. It's a pleasure to connect with you."`;
-
 async function getGeminiResponse(userInput: string) {
   const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
   let fullPrompt = "";
 
   if (firstMssg) {
     firstMssg = false;
-    fullPrompt = `${greet}\n\nUser's Question: ${userInput}`;
+    fullPrompt = `${profile}\n\nUser's Question: ${userInput}`;
   } else {
     fullPrompt = `${profile}\n\nUser's Question: ${userInput}`;
   }
@@ -27,16 +24,16 @@ async function getGeminiResponse(userInput: string) {
 }
 
 function Searchbar() {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const messagesRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null); // user k input bar ka reference 
+  const messagesRef = useRef<HTMLDivElement | null>(null); // jaha par user aur bot ka mssg dikega uska reference 
   const [geminiprompt, setGeminiprompt] = useState(false);
-  const [input, setInput] = useState("");
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [firstPrompt, setFirstPrompt] = useState(false);
+  const [input, setInput] = useState(""); // user ka input
+  const [sidebarExpanded, setSidebarExpanded] = useState(false); // user ne sidebar mai hover kia hai ki nhi
+  const [firstPrompt, setFirstPrompt] = useState(false); // first prompt user na kia hai ki nhi
 
   // FSM mode
-  type Mode = "command" | "dictation";
-  const [mode, setMode] = useState<Mode>("command");
+  type Mode = "command" | "dictation"; // new data type
+  const [mode, setMode] = useState<Mode>("command"); // current mode
 
   // ------------------- SPEECH -------------------
   useEffect(() => {
@@ -63,17 +60,17 @@ function Searchbar() {
         // ---- Trigger dictation ----
         if (transcript.includes("text")) {
           setMode("dictation");
-          setInput("");
+          // setInput("");
           inputRef.current?.focus();
           inputRef.current?.select();
         }
 
         // ---- Scroll commands ----
-        if (messagesRef.current) {
+        else if (messagesRef.current) {
           if (transcript.includes("scroll up")) {
             messagesRef.current.scrollTo({ top: 0, behavior: "smooth" });
           }
-          if (transcript.includes("scroll down")) {
+          else if (transcript.includes("scroll down")) {
             messagesRef.current.scrollTo({
               top: messagesRef.current.scrollHeight,
               behavior: "smooth",
@@ -82,7 +79,7 @@ function Searchbar() {
         }
       } else if (mode === "dictation") {
         // ---- End dictation & submit ----
-        if (transcript.includes("enter")) {
+        if (transcript.toLocaleLowerCase() === "enter") {
           console.log("Submitting:", input);
           setMode("command");
           inputRef.current?.blur();
@@ -152,7 +149,7 @@ function Searchbar() {
       messagesRef.current.removeChild(messagesRef.current.lastChild);
     }
     setFirstPrompt(false);
-  };
+  }; // clear 
 
   const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -186,7 +183,7 @@ function Searchbar() {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
     setGeminiprompt(false);
-  };
+  }; // clear
 
   // ------------------- UI -------------------
   return (
@@ -220,7 +217,7 @@ function Searchbar() {
             {sidebarExpanded && <span className="text-gray-300">Settings</span>}
           </button>
         </div>
-      </div>
+      </div> {/* clear */}
 
       {/* Main Chat Area */}
       <div className="w-full h-screen flex flex-col items-center border-2">
@@ -229,7 +226,7 @@ function Searchbar() {
           <p className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
             CPOPANDEY
           </p>
-        </div>
+        </div> {/* clear */}
 
         {/* Messages */}
         <div
