@@ -46,7 +46,7 @@ function Searchbar() {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = "en-IN";
+    recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.continuous = false;
 
@@ -58,7 +58,7 @@ function Searchbar() {
 
       if (mode === "command") {
         // ---- Trigger dictation ----
-        if (transcript.includes("text")) {
+        if (transcript.includes("start text")) {
           setMode("dictation");
           // setInput("");
           inputRef.current?.focus();
@@ -75,11 +75,13 @@ function Searchbar() {
               top: messagesRef.current.scrollHeight,
               behavior: "smooth",
             });
+          }else if (transcript.includes("clear chat")) {
+            deleteMessage();
           }
         }
       } else if (mode === "dictation") {
         // ---- End dictation & submit ----
-        if (transcript.toLocaleLowerCase() === "enter") {
+        if (transcript.toLocaleLowerCase() === "submit") {
           console.log("Submitting:", input);
           setMode("command");
           inputRef.current?.blur();
@@ -220,7 +222,7 @@ function Searchbar() {
       </div> {/* clear */}
 
       {/* Main Chat Area */}
-      <div className="w-full h-screen flex flex-col items-center border-2">
+      <div className="w-full h-screen flex flex-col items-center">
         {/* Header */}
         <div className="w-full h-[7%] flex items-center pl-4">
           <p className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
@@ -230,7 +232,7 @@ function Searchbar() {
 
         {/* Messages */}
         <div
-          className={`w-full h-[80%] border-2 px-[20%] ${!firstPrompt ? "flex items-center justify-center" : ""
+          className={`w-full h-[80%] px-[20%] ${!firstPrompt ? "flex items-center justify-center" : ""
             }`}
         >
           {!firstPrompt ? (
@@ -241,7 +243,7 @@ function Searchbar() {
             </div>
           ) : null}
           <div
-            className={`h-full w-full p-4 overflow-y-auto flex flex-col ${!firstPrompt ? "hidden" : null
+            className={`h-full w-full p-4 overflow-y-auto flex flex-col custom-scrollbar ${!firstPrompt ? "hidden" : null
               }`}
             ref={messagesRef}
           />
@@ -251,7 +253,7 @@ function Searchbar() {
         <form
           id="chat-form"
           onSubmit={handleSend}
-          className="w-[60%] flex items-center bg-[#202124] text-white rounded-2xl px-3 py-2 shadow-md border-2 border-amber-600 mb-6"
+          className={`w-[60%] flex items-center bg-[#202124] text-white rounded-2xl px-3 py-2 shadow-md border-2 4 ${( mode === "dictation" ? `border-green-400` : `border-amber-600`)} mb-6`}
         >
           <button
             type="button"
